@@ -8,16 +8,22 @@ data_dir <- "/home/james/wdResearch/FLUTEoutput/Data/"
 
 #set for the run in CRAFTY (althrough runID difficult to control)
 scenario_list <- c(
-   "scenario20_rcp45_Stest_2020-07-24a",
-   "scenario20_Const_Stest_2020-07-21a"
+   "scenario20_Const_Stest_2020-07-29b",
+   "scenario20_YieldA_Stest_2020-07-29a",
+   "scenario20_YieldB_Stest_2020-07-29a",
+   "scenario20_rcp45_Stest_2020-07-29a",
+   "scenario20_rcp85_Stest_2020-07-29a"
 )
 
 #scenario_lab <- "Const"
 
 #set for the run in CRAFTY (althrough runID difficult to control)
 scenario_lab_list <- c(
+   "Const",
+   "YieldA",
+   "YieldB",
    "rcp45",
-   "Const"
+   "rcp85"
 )
 
 pdfprint <- T
