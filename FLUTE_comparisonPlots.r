@@ -5,8 +5,8 @@ library(tidyverse)
 data_dir <- "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/output/Brazil/Unknown/"
 
 #scenario <- "flute_baseline_2020-08-06a"
-scenario_list <- c("flute_baseline_2020-08-06a",
-                   "flute_demAPdecrA_2020-08-06a",
+scenario_list <- c("flute_baseline_2020-08-06b",
+                   "flute_demAPdecrA_2020-08-06b",
                    "flute_yldCPshkA_2020-08-06a",
                    "flute_demAPdecrA_yldCPshkA_2020-08-06a"
 )
@@ -19,6 +19,8 @@ scenario_lab_list <- c(
    "Dem-Yld"
 )
 
+
+yrs <- seq(2001,2030,1)
 
 #regions from BioLUC to plot (in addition to BRA)
 regions <- c("USA", "EU 27", "CHIHKG", "S S AFR")
@@ -75,7 +77,7 @@ sdat_area_all <- sdat_area_all %>%
    rename(ha=Gg) %>%
    select(-Measure)
 
-#i <- 4
+#i <- 1
 for(i in seq_along(scenario_list)){
 
    scenario <- scenario_list[i]
@@ -96,7 +98,8 @@ for(i in seq_along(scenario_list)){
       mutate(Measure = "Production") %>%
       mutate(Commodity=replace(Commodity, Commodity == "OilCrop", "Soy")) %>%
       mutate(Scenario=scenario_lab) %>%
-      filter(Region %in% regions)
+      filter(Region %in% regions) %>%
+      filter(Year %in% yrs)
    
    sdat_export <- sdat %>%
       rename(Variable=Years) %>%
@@ -109,7 +112,8 @@ for(i in seq_along(scenario_list)){
       mutate(Measure = "Export") %>%
       mutate(Commodity=replace(Commodity, Commodity == "OilCrop", "Soy")) %>%
       mutate(Scenario=scenario_lab) %>%
-      filter(Region %in% regions)
+      filter(Region %in% regions) %>%
+      filter(Year %in% yrs)
    
    sdat_area <- sdat %>%
       rename(Variable=Years) %>%
@@ -121,7 +125,8 @@ for(i in seq_along(scenario_list)){
       mutate(Year = as.numeric(Year)) %>%
       mutate(Commodity=replace(Commodity, Commodity == "OilCrop", "Soy")) %>%
       mutate(Scenario=scenario_lab) %>%
-      filter(Region %in% regions)
+      filter(Region %in% regions) %>%
+      filter(Year %in% yrs)
    
    sdat_pas <- sdat %>%
       rename(Variable=Years) %>%
@@ -132,7 +137,8 @@ for(i in seq_along(scenario_list)){
       pivot_longer(-c(Region,Commodity), names_to="Year", values_to="ha") %>%
       mutate(Year = as.numeric(Year)) %>%
       mutate(Scenario=scenario_lab) %>%
-      filter(Region %in% regions)
+      filter(Region %in% regions) %>%
+      filter(Year %in% yrs)
    
    sdat_area <- bind_rows(sdat_area, sdat_pas)
    
@@ -162,7 +168,6 @@ for(i in seq_along(scenario_list)){
    
 ######
 #CRAFTY DATA
-yrs <- unique(sdat_prodn_all$Year)
 
 #empty table to populate from files below
 empty_cdat <- data.frame(
