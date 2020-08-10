@@ -41,8 +41,17 @@ scenario <- "scenario20_rcp85_Stest_2020-08-05a"
       separate(CFT, into=c("Commodity","To", "From"),sep="\\,") %>%  #split on , needs double escape (one for R, one for regex)
       pivot_longer(-c(Commodity,To,From), names_to="Year", values_to="Gg") %>%
       mutate(From = trimws(From)) %>%
-      mutate(To = trimws(To)) 
+      mutate(To = trimws(To)) %>%
+      filter(!is.na(From)) #remove empty rows
 
+   regions <- c("CAN", "USA", "CCAmerica", "Brazil", "SOAmer", "REurope", "EU27", "OthCEECIS", "MEASNAfr", "SSAFR", 
+                "Russia", "CHIHKG", "INDIA", "RSASIA", "EASIA", "Japan", "RSEASIA", "MALAINDO", "OCEANIA") 
+   
+   rcols <- c("#C7821C", "#D7765B", "#CD7E37", "#00AABA", "#B177E2", "#A69100", "#AF8E00", "#65A100", "#DC726B", "#00A8C3", 
+              "#909800", "#BD72DD", "#7D89E6", "#00A2D3", "#E16A86", "#00AC74", "#00ABB0", "#00AD8E", "#839B00")
+   
+   names(rcols) <- regions
+   
    pdf_name <- paste0(data_dir,scenario,"/circlize.pdf")
    
    pdf(file = pdf_name)
@@ -52,6 +61,7 @@ scenario <- "scenario20_rcp85_Stest_2020-08-05a"
    
    for(cm in cms){
       for(yr in yrs){
+
 
       cft <- cft_long %>%
          filter(Year == yr) %>%
@@ -65,8 +75,8 @@ scenario <- "scenario20_rcp85_Stest_2020-08-05a"
    
       chordDiagram(cft,
                    annotationTrack = "grid",
-                   #grid.col = countryCol,
-                   #transparency = 0.25,
+                   grid.col = rcols,
+                   transparency = 0.25,
                    preAllocateTracks = list(track.height = 0.2), 
                    directional = 1, 
                    direction.type = c("diffHeight", "arrows"), 
