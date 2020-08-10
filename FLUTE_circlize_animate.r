@@ -5,18 +5,15 @@ library(animation)
 
 #data_dir <- "/home/james/wdResearch/FLUTEoutput/Data/"
 data_dir <- "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/output/Brazil/Unknown/"
-#scenario <- "scenario20_Const_Stest_2020-07-21a"
 
-#set for the run in CRAFTY (althrough runID difficult to control)
+#scenario <- "flute_baseline_2020-08-06a"
 scenario_list <- c("flute_baseline_2020-08-06a",
                    "flute_demAPdecrA_2020-08-06a",
                    "flute_yldCPshkA_2020-08-06a",
                    "flute_demAPdecrA_yldCPshkA_2020-08-06a"
 )
 
-#scenario_lab <- "Const"
-
-#set for the run in CRAFTY (althrough runID difficult to control)
+#scenario_lab <- "Baseline"
 scenario_lab_list <- c(
    "Baseline",
    "Demand",
@@ -25,7 +22,6 @@ scenario_lab_list <- c(
 )
 
 
-#scenario <- "flute_baseline_2020-08-06a"
 
 for(i in seq_along(scenario_list)){
 

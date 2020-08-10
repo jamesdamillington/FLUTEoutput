@@ -3,17 +3,15 @@ library(tidyverse)
 
 #data_dir <- "/home/james/wdResearch/FLUTEoutput/Data/"
 data_dir <- "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/output/Brazil/Unknown/"
-#scenario <- "flute_baseline_2020-08-06a"
 
+#scenario <- "flute_baseline_2020-08-06a"
 scenario_list <- c("flute_baseline_2020-08-06a",
                    "flute_demAPdecrA_2020-08-06a",
                    "flute_yldCPshkA_2020-08-06a",
                    "flute_demAPdecrA_yldCPshkA_2020-08-06a"
 )
 
-#scenario_lab <- "baseline"
-
-#set for the run in CRAFTY (althrough runID difficult to control)
+#scenario_lab <- "Baseline"
 scenario_lab_list <- c(
    "Baseline",
    "Demand",

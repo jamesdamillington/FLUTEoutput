@@ -2,30 +2,24 @@
 library(tidyverse)
 library(circlize)
 
-data_dir <- "/home/james/wdResearch/FLUTEoutput/Data/"
-#scenario <- "scenario20_Const_Stest_2020-07-21a"
+#data_dir <- "/home/james/wdResearch/FLUTEoutput/Data/"
+data_dir <- "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/output/Brazil/Unknown/"
 
-#set for the run in CRAFTY (althrough runID difficult to control)
-scenario_list <- c(
-   "scenario20_Const_Stest_2020-07-29b",
-   "scenario20_YieldA_Stest_2020-07-29a",
-   "scenario20_YieldB_Stest_2020-07-29a",
-   "scenario20_rcp45_Stest_2020-07-29a",
-   "scenario20_rcp85_Stest_2020-07-29a"
+#scenario <- "flute_baseline_2020-08-06a"
+scenario_list <- c("flute_baseline_2020-08-06a",
+                   "flute_demAPdecrA_2020-08-06a",
+                   "flute_yldCPshkA_2020-08-06a",
+                   "flute_demAPdecrA_yldCPshkA_2020-08-06a"
 )
 
-#scenario_lab <- "Const"
-
-#set for the run in CRAFTY (althrough runID difficult to control)
+#scenario_lab <- "Baseline"
 scenario_lab_list <- c(
-   "Const",
-   "YieldA",
-   "YieldB",
-   "rcp45",
-   "rcp85"
+   "Baseline",
+   "Demand",
+   "Yield",
+   "Dem-Yld"
 )
 
-scenario <- "scenario20_rcp85_Stest_2020-08-05a"
 
 #for(i in seq_along(scenario_list)){
    
