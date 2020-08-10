@@ -21,10 +21,15 @@ scenario_lab_list <- c(
 )
 
 
-#for(i in seq_along(scenario_list)){
+#regions to highlight links
+highlights <- c("Brazil", "USA", "EU27", "CHIHKG", "SSAFR")
+
+
+
+for(i in seq_along(scenario_list)){
    
-#   scenario <- scenario_list[i]
-#   scenario_lab <- scenario_lab_list[i]
+   scenario <- scenario_list[i]
+   scenario_lab <- scenario_lab_list[i]
    
    sdat <- read_csv(paste0(data_dir, scenario, "/StellaData/CPImportToFrom.csv"))
    
@@ -41,12 +46,18 @@ scenario_lab_list <- c(
    regions <- c("CAN", "USA", "CCAmerica", "Brazil", "SOAmer", "REurope", "EU27", "OthCEECIS", "MEASNAfr", "SSAFR", 
                 "Russia", "CHIHKG", "INDIA", "RSASIA", "EASIA", "Japan", "RSEASIA", "MALAINDO", "OCEANIA") 
    
-   rcols <- c("#C7821C", "#D7765B", "#CD7E37", "#00AABA", "#B177E2", "#A69100", "#AF8E00", "#65A100", "#DC726B", "#00A8C3", 
-              "#909800", "#BD72DD", "#7D89E6", "#00A2D3", "#E16A86", "#00AC74", "#00ABB0", "#00AD8E", "#839B00")
+   rcols <- c("#C7821C", "#e41a1c", "#CD7E37", "#4daf4a", "#B177E2", "#A69100", "#377eb8", "#65A100", "#DC726B", "#984ea3", 
+              "#909800", "#ff7f00", "#7D89E6", "#00A2D3", "#E16A86", "#00AC74", "#00ABB0", "#00AD8E", "#839B00")
+   
+   #uniform grey
+   greycol <- rep("lightgrey", 19)
+   
+   #for regions not in highlights list, set grey
+   rcols[!regions %in% highlights] <- greycol[!regions %in% highlights]
    
    names(rcols) <- regions
    
-   pdf_name <- paste0(data_dir,scenario,"/circlize.pdf")
+   pdf_name <- paste0(data_dir,scenario,"/",scenario_lab,"_circlize.pdf")
    
    pdf(file = pdf_name)
    
@@ -62,11 +73,8 @@ scenario_lab_list <- c(
          filter(Commodity == cm) %>%
          rename(Value=Gg) %>%
          dplyr::select(From, To, Value)  #get columns in the right order!
-         
-     #to do: consistent colours
-     #highlight links USA, BRA, CHI, SSAfr (gre remaining)
-     #see https://jokergoo.github.io/circlize_book/book/the-chorddiagram-function.html#highlight-links
-   
+      
+
       chordDiagram(cft,
                    annotationTrack = "grid",
                    grid.col = rcols,
@@ -89,4 +97,5 @@ scenario_lab_list <- c(
    }
    
    dev.off()
+}
    
