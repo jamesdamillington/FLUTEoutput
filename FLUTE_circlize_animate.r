@@ -22,6 +22,10 @@ scenario_lab_list <- c(
 )
 
 
+#regions to highlight links
+highlights <- c("Brazil", "USA", "EU27", "CHIHKG", "SSAFR")
+
+
 
 for(i in seq_along(scenario_list)){
 
@@ -43,8 +47,14 @@ for(i in seq_along(scenario_list)){
    regions <- c("CAN", "USA", "CCAmerica", "Brazil", "SOAmer", "REurope", "EU27", "OthCEECIS", "MEASNAfr", "SSAFR", 
                 "Russia", "CHIHKG", "INDIA", "RSASIA", "EASIA", "Japan", "RSEASIA", "MALAINDO", "OCEANIA") 
    
-   rcols <- c("#C7821C", "#D7765B", "#CD7E37", "#00AABA", "#B177E2", "#A69100", "#AF8E00", "#65A100", "#DC726B", "#00A8C3", 
-              "#909800", "#BD72DD", "#7D89E6", "#00A2D3", "#E16A86", "#00AC74", "#00ABB0", "#00AD8E", "#839B00")
+   rcols <- c("#C7821C", "#e41a1c", "#CD7E37", "#4daf4a", "#B177E2", "#A69100", "#377eb8", "#65A100", "#DC726B", "#984ea3", 
+              "#909800", "#ff7f00", "#7D89E6", "#00A2D3", "#E16A86", "#00AC74", "#00ABB0", "#00AD8E", "#839B00")
+   
+   #uniform grey
+   greycol <- rep("lightgrey", 19)
+   
+   #for regions not in highlights list, set grey
+   rcols[!regions %in% highlights] <- greycol[!regions %in% highlights]
    
    names(rcols) <- regions
    
@@ -65,10 +75,8 @@ for(i in seq_along(scenario_list)){
                filter(Commodity == cm) %>%
                rename(Value=Gg) %>%
                dplyr::select(From, To, Value)  #get columns in the right order!
-            
-            #highlight links USA, BRA, CHI, SSAfr (gre remaining)
-            #see https://jokergoo.github.io/circlize_book/book/the-chorddiagram-function.html#highlight-links
-            
+           
+           
             chordDiagram(cft,
                          annotationTrack = "grid",
                          grid.col = rcols,
@@ -88,7 +96,7 @@ for(i in seq_along(scenario_list)){
                circos.axis(h = "top", labels.cex = 0.5, major.tick.percentage = 0.2, sector.index = sector.name, track.index = 2)
             }, bg.border = NA) # here set bg.border to NA is important
          }
-      }, movie.name=paste0(data_dir,scenario,"/",cm,"_",head(yrs,1),"-",tail(yrs,1),".gif"),autobrowse=F)
+      }, movie.name=paste0(data_dir,scenario,"/",cm,"_",head(yrs,1),"-",tail(yrs,1),".gif"),autobrowse=F, ani.res=125, ani.width=960, ani.height=960)
    }
 }
 
