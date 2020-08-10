@@ -7,8 +7,8 @@ data_dir <- "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/output/Brazi
 #scenario <- "flute_baseline_2020-08-06a"
 scenario_list <- c("flute_baseline_2020-08-06b",
                    "flute_demAPdecrA_2020-08-06b",
-                   "flute_yldCPshkA_2020-08-06a",
-                   "flute_demAPdecrA_yldCPshkA_2020-08-06a"
+                   "flute_yldCPshkA_2020-08-06b",
+                   "flute_demAPdecrA_yldCPshkA_2020-08-06b"
 )
 
 #scenario_lab <- "Baseline"
@@ -97,6 +97,7 @@ for(i in seq_along(scenario_list)){
       mutate(Year = as.numeric(Year)) %>%
       mutate(Measure = "Production") %>%
       mutate(Commodity=replace(Commodity, Commodity == "OilCrop", "Soy")) %>%
+      mutate(Commodity=replace(Commodity, Commodity == "CowSheepGoat", "Meat")) %>%
       mutate(Scenario=scenario_lab) %>%
       filter(Region %in% regions) %>%
       filter(Year %in% yrs)
@@ -111,6 +112,7 @@ for(i in seq_along(scenario_list)){
       mutate(Year = as.numeric(Year)) %>%
       mutate(Measure = "Export") %>%
       mutate(Commodity=replace(Commodity, Commodity == "OilCrop", "Soy")) %>%
+      mutate(Commodity=replace(Commodity, Commodity == "CowSheepGoat", "Meat")) %>%
       mutate(Scenario=scenario_lab) %>%
       filter(Region %in% regions) %>%
       filter(Year %in% yrs)
@@ -124,6 +126,7 @@ for(i in seq_along(scenario_list)){
       pivot_longer(-c(Region,Commodity), names_to="Year", values_to="ha") %>%
       mutate(Year = as.numeric(Year)) %>%
       mutate(Commodity=replace(Commodity, Commodity == "OilCrop", "Soy")) %>%
+      mutate(Commodity=replace(Commodity, Commodity == "CowSheepGoat", "Meat")) %>%
       mutate(Scenario=scenario_lab) %>%
       filter(Region %in% regions) %>%
       filter(Year %in% yrs)
