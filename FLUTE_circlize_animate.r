@@ -32,9 +32,9 @@ for(i in seq_along(scenario_list)){
    scenario <- scenario_list[i]
 #   scenario_lab <- scenario_lab_list[i]
 
-   sdat <- read_csv(paste0(data_dir, scenario, "/StellaData/CPImportToFrom.csv"))
+   cpdat <- read_csv(paste0(data_dir, scenario, "/StellaData/CPImportToFrom.csv"))
    
-   cft_long <- sdat %>%
+   cpft_long <- cpdat %>%
       rename(Variable=Years) %>%
       separate(Variable, into=c("first","CFT","last"),sep="\\[|\\]") %>%  #split on [ or ] again double escape
       dplyr::select(-first,-last) %>%
@@ -43,6 +43,20 @@ for(i in seq_along(scenario_list)){
       mutate(From = trimws(From)) %>%
       mutate(To = trimws(To)) %>%
       filter(!is.na(From)) #remove empty rows
+   
+   apdat <- read_csv(paste0(data_dir, scenario, "/StellaData/APImportToFrom.csv"))
+   
+   apft_long <- apdat %>%
+      rename(Variable=Years) %>%
+      separate(Variable, into=c("first","CFT","last"),sep="\\[|\\]") %>%  #split on [ or ] again double escape
+      dplyr::select(-first,-last) %>%
+      separate(CFT, into=c("Commodity","To", "From"),sep="\\,") %>%  #split on , needs double escape (one for R, one for regex)
+      pivot_longer(-c(Commodity,To,From), names_to="Year", values_to="Gg") %>%
+      mutate(From = trimws(From)) %>%
+      mutate(To = trimws(To)) %>%
+      filter(!is.na(From)) %>%  #remove empty rows
+      mutate(Commodity = if_else(Commodity == "Pig", "Swine", "Meat")) 
+   
    
    regions <- c("CAN", "USA", "CCAmerica", "Brazil", "SOAmer", "REurope", "EU27", "OthCEECIS", "MEASNAfr", "SSAFR", 
                 "Russia", "CHIHKG", "INDIA", "RSASIA", "EASIA", "Japan", "RSEASIA", "MALAINDO", "OCEANIA") 
@@ -60,6 +74,8 @@ for(i in seq_along(scenario_list)){
    
    
    yrs <- seq(2015,2030,1)
+   
+   #crops
    cms <- c("Maize","OilCrop")
    
    #loop commodities
@@ -70,14 +86,14 @@ for(i in seq_along(scenario_list)){
          #loop years
          for(j in seq_along(yrs)){
             
-            cft <- cft_long %>%
+            cpft <- cpft_long %>%
                filter(Year == yrs[j]) %>%
                filter(Commodity == cm) %>%
                rename(Value=Gg) %>%
                dplyr::select(From, To, Value)  #get columns in the right order!
            
            
-            chordDiagram(cft,
+            chordDiagram(cpft,
                          annotationTrack = "grid",
                          grid.col = rcols,
                          transparency = 0.25,
@@ -98,5 +114,43 @@ for(i in seq_along(scenario_list)){
          }
       }, movie.name=paste0(data_dir,scenario,"/",cm,"_",head(yrs,1),"-",tail(yrs,1),".gif"),autobrowse=F, ani.res=125, ani.width=960, ani.height=960)
    }
+   
+   
+   
+   #animal products
+   cm <- "Meat"
+
+   saveGIF({
+      
+      #loop years
+      for(j in seq_along(yrs)){
+         
+         apft <- apft_long %>%
+            filter(Year == yrs[j]) %>%
+            filter(Commodity == cm) %>%
+            rename(Value=Gg) %>%
+            dplyr::select(From, To, Value)  #get columns in the right order!
+         
+         
+         chordDiagram(apft,
+                      annotationTrack = "grid",
+                      grid.col = rcols,
+                      transparency = 0.25,
+                      preAllocateTracks = list(track.height = 0.2), 
+                      directional = 1, 
+                      direction.type = c("diffHeight", "arrows"), 
+                      link.arr.type = "big.arrow")
+         
+         title(main= paste0(yrs[j], ", ",cm))
+         circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
+            xlim = get.cell.meta.data("xlim")
+            ylim = get.cell.meta.data("ylim")
+            sector.name = get.cell.meta.data("sector.index")
+            circos.text(mean(xlim), ylim[1], sector.name, facing = "clockwise",
+                        niceFacing = TRUE, adj = c(-0.25, 0.5))
+            circos.axis(h = "top", labels.cex = 0.5, major.tick.percentage = 0.2, sector.index = sector.name, track.index = 2)
+         }, bg.border = NA) # here set bg.border to NA is important
+      }
+   }, movie.name=paste0(data_dir,scenario,"/",cm,"_",head(yrs,1),"-",tail(yrs,1),".gif"),autobrowse=F, ani.res=125, ani.width=960, ani.height=960)
 }
 
