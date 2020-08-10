@@ -20,7 +20,7 @@ scenario_lab_list <- c(
 )
 
 
-#unique(sdat_prodn$Region)
+#regions from BioLUC to plot (in addition to BRA)
 regions <- c("USA", "EU 27", "CHIHKG", "S S AFR")
 
 
