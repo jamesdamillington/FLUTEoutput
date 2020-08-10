@@ -1,28 +1,30 @@
 #required packages
 library(tidyverse)
 
-data_dir <- "/home/james/wdResearch/FLUTEoutput/Data/"
-#scenario <- "scenario20_Const_Stest_2020-07-21a"
+#data_dir <- "/home/james/wdResearch/FLUTEoutput/Data/"
+data_dir <- "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/output/Brazil/Unknown/"
+#scenario <- "flute_baseline_2020-08-06a"
 
-#set for the run in CRAFTY (althrough runID difficult to control)
-scenario_list <- c(
-   "scenario20_Const_Stest_2020-07-29b",
-   "scenario20_YieldA_Stest_2020-07-29a",
-   "scenario20_YieldB_Stest_2020-07-29a",
-   "scenario20_rcp45_Stest_2020-07-29a",
-   "scenario20_rcp85_Stest_2020-07-29a"
+scenario_list <- c("flute_baseline_2020-08-06a",
+                   "flute_demAPdecrA_2020-08-06a",
+                   "flute_yldCPshkA_2020-08-06a",
+                   "flute_demAPdecrA_yldCPshkA_2020-08-06a"
 )
 
-#scenario_lab <- "Const"
+#scenario_lab <- "baseline"
 
 #set for the run in CRAFTY (althrough runID difficult to control)
 scenario_lab_list <- c(
-   "Const",
-   "YieldA",
-   "YieldB",
-   "rcp45",
-   "rcp85"
+   "Baseline",
+   "Demand",
+   "Yield",
+   "Dem-Yld"
 )
+
+
+#unique(sdat_prodn$Region)
+regions <- c("USA", "EU 27", "CHIHKG", "S S AFR")
+
 
 pdfprint <- T
 
@@ -58,7 +60,7 @@ read_cDat <- function(LC_name) {
 
 #empty table to populate from files below
 empty_sdat <- data.frame(
-   Country = character(),
+   Region = character(),
    Commodity = character(),
    Year = integer(),
    Gg = numeric(),
@@ -88,49 +90,51 @@ for(i in seq_along(scenario_list)){
    sdat_prodn <- sdat %>%
       rename(Variable=Years) %>%
       dplyr::filter(grepl("prodn", Variable)) %>%
-      separate(Variable, into=c("Country","Variable"),sep="\\.") %>%   #split on . needs double escape (one for R, one for regex)
+      separate(Variable, into=c("Region","Variable"),sep="\\.") %>%   #split on . needs double escape (one for R, one for regex)
       separate(Variable, into=c("first","Commodity","last"),sep="\\[|\\]") %>%  #split on [ or ] again needs double escape
       dplyr::select(-first,-last) %>%
-      pivot_longer(-c(Country,Commodity), names_to="Year", values_to="Gg") %>%
+      pivot_longer(-c(Region,Commodity), names_to="Year", values_to="Gg") %>%
       mutate(Year = as.numeric(Year)) %>%
       mutate(Measure = "Production") %>%
       mutate(Commodity=replace(Commodity, Commodity == "OilCrop", "Soy")) %>%
-      mutate(Scenario=scenario_lab)
+      mutate(Scenario=scenario_lab) %>%
+      filter(Region %in% regions)
    
    sdat_export <- sdat %>%
       rename(Variable=Years) %>%
       filter(grepl("export", Variable)) %>%
-      separate(Variable, into=c("Country","Variable"),sep="\\.") %>%   #split on . needs double escape (one for R, one for regex)
+      separate(Variable, into=c("Region","Variable"),sep="\\.") %>%   #split on . needs double escape (one for R, one for regex)
       separate(Variable, into=c("first","Commodity","last"),sep="\\[|\\]") %>%  #split on [ or ] again needs double escape
       dplyr::select(-first,-last) %>%
-      pivot_longer(-c(Country,Commodity), names_to="Year", values_to="Gg") %>%
+      pivot_longer(-c(Region,Commodity), names_to="Year", values_to="Gg") %>%
       mutate(Year = as.numeric(Year)) %>%
       mutate(Measure = "Export") %>%
       mutate(Commodity=replace(Commodity, Commodity == "OilCrop", "Soy")) %>%
-      mutate(Scenario=scenario_lab) 
+      mutate(Scenario=scenario_lab) %>%
+      filter(Region %in% regions)
    
    sdat_area <- sdat %>%
       rename(Variable=Years) %>%
       filter(grepl("crop lands", Variable)) %>%
-      separate(Variable, into=c("Country","Variable"),sep="\\.") %>%   #split on . needs double escape (one for R, one for regex)
+      separate(Variable, into=c("Region","Variable"),sep="\\.") %>%   #split on . needs double escape (one for R, one for regex)
       separate(Variable, into=c("first","Commodity","last"),sep="\\[|\\]") %>%  #split on [ or ] again needs double escape
       dplyr::select(-first,-last) %>%
-      pivot_longer(-c(Country,Commodity), names_to="Year", values_to="ha") %>%
-      #mutate(Gg = mtons / 1000) %>% 
+      pivot_longer(-c(Region,Commodity), names_to="Year", values_to="ha") %>%
       mutate(Year = as.numeric(Year)) %>%
-      #dplyr::select(-mtons) %>%
       mutate(Commodity=replace(Commodity, Commodity == "OilCrop", "Soy")) %>%
-      mutate(Scenario=scenario_lab) 
+      mutate(Scenario=scenario_lab) %>%
+      filter(Region %in% regions)
    
    sdat_pas <- sdat %>%
       rename(Variable=Years) %>%
       filter(grepl("Forage Land", Variable)) %>%
-      separate(Variable, into=c("Country","Variable"),sep="\\.") %>%
+      separate(Variable, into=c("Region","Variable"),sep="\\.") %>%
       mutate(Commodity = "Pasture") %>%
       select(-Variable) %>%
-      pivot_longer(-c(Country,Commodity), names_to="Year", values_to="ha") %>%
+      pivot_longer(-c(Region,Commodity), names_to="Year", values_to="ha") %>%
       mutate(Year = as.numeric(Year)) %>%
-      mutate(Scenario=scenario_lab) 
+      mutate(Scenario=scenario_lab) %>%
+      filter(Region %in% regions)
    
    sdat_area <- bind_rows(sdat_area, sdat_pas)
    
@@ -150,10 +154,10 @@ for(i in seq_along(scenario_list)){
    #sdat_land <- sdat %>%
    #   rename(Variable=Years) %>%
    #   filter(grepl("and", Variable)) %>%
-   #   separate(Variable, into=c("Country","Variable"),sep="\\.") %>%   #split on . needs double escape (one for R, one for regex)
+   #   separate(Variable, into=c("Region","Variable"),sep="\\.") %>%   #split on . needs double escape (one for R, one for regex)
    #   separate(Variable, into=c("first","Variable","last"),sep="\\[|\\]") %>%  #split on [ or ] again needs double escape
    #   dplyr::select(-first,-last) %>%
-   #   pivot_longer(-c(Country,Variable), names_to="Year", values_to="ha")
+   #   pivot_longer(-c(Region,Variable), names_to="Year", values_to="ha")
 }
 
 
@@ -164,7 +168,7 @@ yrs <- unique(sdat_prodn_all$Year)
 
 #empty table to populate from files below
 empty_cdat <- data.frame(
-   Country = character(),
+   Region = character(),
    Commodity = character(),
    Year = integer(),
    Gg = numeric(),
@@ -197,14 +201,14 @@ for(i in seq_along(scenario_list)){
       dat <- read_csv(paste0(data_dir,scenario,"/StellaData/",filen),col_names=F)
       
       cdat <- cdat %>% 
-         add_row(Country = "BRA", Commodity = "Soy", Measure = "Production", Year = yrs[i], Gg = as.numeric(dat[1,2])) %>%
-         add_row(Country = "BRA", Commodity = "Soy", Measure = "Storage", Year = yrs[i], Gg = as.numeric(dat[4,2])) %>%
-         add_row(Country = "BRA", Commodity = "Soy", Measure = "Export", Year = yrs[i], Gg = as.numeric(dat[3,2])) %>%
-         add_row(Country = "BRA", Commodity = "Maize", Measure = "Production", Year = yrs[i], Gg = as.numeric(dat[6,2])) %>%
-         add_row(Country = "BRA", Commodity = "Maize", Measure = "Storage", Year = yrs[i], Gg = as.numeric(dat[9,2])) %>%
-         add_row(Country = "BRA", Commodity = "Maize", Measure = "Export", Year = yrs[i], Gg = as.numeric(dat[8,2])) %>%
-         add_row(Country = "BRA", Commodity = "Meat", Measure = "Production", Year = yrs[i], Gg = as.numeric(dat[11,2])) %>%
-         add_row(Country = "BRA", Commodity = "Meat", Measure = "Export", Year = yrs[i], Gg = as.numeric(dat[14,2])) 
+         add_row(Region = "BRA", Commodity = "Soy", Measure = "Production", Year = yrs[i], Gg = as.numeric(dat[1,2])) %>%
+         add_row(Region = "BRA", Commodity = "Soy", Measure = "Storage", Year = yrs[i], Gg = as.numeric(dat[4,2])) %>%
+         add_row(Region = "BRA", Commodity = "Soy", Measure = "Export", Year = yrs[i], Gg = as.numeric(dat[3,2])) %>%
+         add_row(Region = "BRA", Commodity = "Maize", Measure = "Production", Year = yrs[i], Gg = as.numeric(dat[6,2])) %>%
+         add_row(Region = "BRA", Commodity = "Maize", Measure = "Storage", Year = yrs[i], Gg = as.numeric(dat[9,2])) %>%
+         add_row(Region = "BRA", Commodity = "Maize", Measure = "Export", Year = yrs[i], Gg = as.numeric(dat[8,2])) %>%
+         add_row(Region = "BRA", Commodity = "Meat", Measure = "Production", Year = yrs[i], Gg = as.numeric(dat[11,2])) %>%
+         add_row(Region = "BRA", Commodity = "Meat", Measure = "Export", Year = yrs[i], Gg = as.numeric(dat[14,2])) 
       #%>%
       #add_row(Commodity = "Dairy", Measure = "Production", Year = yrs[i], value_gg = as.numeric(dat[12,2])) %>%
       #add_row(Commodity = "Dairy", Measure = "Export", Year = yrs[i], value_gg = as.numeric(dat[16,2]))
@@ -245,9 +249,9 @@ for(i in seq_along(scenario_list)){
       mutate(Commodity = if_else(Commodity == "Soy.Mod", "Soy", 
                                  if_else(Commodity == "Pas.Mod", "Pasture",
                                          if_else(Commodity == "Mze.Mod", "Maize", "DC")))) %>%
-      mutate(Country = "BRA") %>%
+      mutate(Region = "BRA") %>%
       mutate(Scenario = scenario_lab) %>%
-      select(Country, Commodity, Year, ha, Scenario)
+      select(Region, Commodity, Year, ha, Scenario)
       
    if(i == 1) {
       cdat_prodn_all <- cdat_prodn
@@ -279,7 +283,7 @@ if(length(scenario_list) > 1) {
       geom_line(aes(colour=Commodity)) +
       scale_y_continuous(name = "Production (Gg)", labels = scales::comma) +
       scale_x_continuous(breaks=c(2005,2015,2025)) +
-      facet_grid(Scenario~Country) +
+      facet_grid(Scenario~Region) +
       ggtitle("Multi Scenarios")
    print(multiprod)
    
@@ -287,7 +291,7 @@ if(length(scenario_list) > 1) {
       geom_line(aes(colour=Commodity)) +
       scale_y_continuous(name = "Export (Gg)", labels = scales::comma) +
       scale_x_continuous(breaks=c(2005,2015,2025)) +
-      facet_grid(Scenario~Country) +
+      facet_grid(Scenario~Region) +
       ggtitle("Multi Scenarios")
    print(multiexport)
    
@@ -297,7 +301,7 @@ if(length(scenario_list) > 1) {
       geom_line(aes(colour=Commodity)) +
       scale_y_continuous(name = "Area (million ha)", labels = scales::comma) +
       scale_x_continuous(breaks=c(2005,2015,2025)) +
-      facet_grid(Scenario~Country) +
+      facet_grid(Scenario~Region) +
       ggtitle("Multi Scenarios")
    print(multiarea)
 }
@@ -311,7 +315,7 @@ for(i in seq_along(scenario_list)){
       geom_line(aes(colour=Commodity)) +
       scale_y_continuous(name = "Production (Gg)", labels = scales::comma) +
       scale_x_continuous(breaks=c(2005,2015,2025)) +
-      facet_grid(.~Country) +
+      facet_grid(.~Region) +
       ggtitle(paste0("Scenario: ",scenario_lab_list[i]))
    print(prodplot)
 
@@ -321,7 +325,7 @@ for(i in seq_along(scenario_list)){
       geom_line(aes(colour=Commodity)) +
       scale_y_continuous(name = "Export (Gg)", labels = scales::comma) +
       scale_x_continuous(breaks=c(2005,2015,2025)) +
-      facet_grid(.~Country) +
+      facet_grid(.~Region) +
       ggtitle(paste0("Scenario: ",scenario_lab_list[i]))
    print(expplot)
    
@@ -332,7 +336,7 @@ for(i in seq_along(scenario_list)){
       geom_line(aes(colour=Commodity)) +
       scale_y_continuous(name = "Area (million ha)", labels = scales::comma) +
       scale_x_continuous(breaks=c(2005,2015,2025)) +
-      facet_grid(.~Country) +
+      facet_grid(.~Region) +
       ggtitle(paste0("Scenario: ",scenario_lab_list[i]))
    print(areaplot)
 
