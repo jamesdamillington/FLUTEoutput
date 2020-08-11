@@ -7,10 +7,10 @@ library(animation)
 data_dir <- "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/output/Brazil/Unknown/"
 
 #scenario <- "flute_baseline_2020-08-06a"
-scenario_list <- c("flute_baseline_2020-08-06a",
-                   "flute_demAPdecrA_2020-08-06a",
-                   "flute_yldCPshkA_2020-08-06a",
-                   "flute_demAPdecrA_yldCPshkA_2020-08-06a"
+scenario_list <- c("flute_baseline_2020-08-06b",
+                   "flute_demAPdecrA_2020-08-06b",
+                   "flute_yldCPshkA_2020-08-06b",
+                   "flute_demAPdecrA_yldCPshkA_2020-08-06b"
 )
 
 #scenario_lab <- "Baseline"
@@ -112,7 +112,7 @@ for(i in seq_along(scenario_list)){
                circos.axis(h = "top", labels.cex = 0.5, major.tick.percentage = 0.2, sector.index = sector.name, track.index = 2)
             }, bg.border = NA) # here set bg.border to NA is important
          }
-      }, movie.name=paste0(data_dir,scenario,"/",cm,"_",head(yrs,1),"-",tail(yrs,1),".gif"),autobrowse=F, ani.res=125, ani.width=960, ani.height=960)
+      }, movie.name=paste0(data_dir,scenario,"/",scenario,"-",cm,"_",head(yrs,1),"-",tail(yrs,1),".gif"),autobrowse=F, ani.res=125, ani.width=960, ani.height=960)
    }
    
    
@@ -151,6 +151,6 @@ for(i in seq_along(scenario_list)){
             circos.axis(h = "top", labels.cex = 0.5, major.tick.percentage = 0.2, sector.index = sector.name, track.index = 2)
          }, bg.border = NA) # here set bg.border to NA is important
       }
-   }, movie.name=paste0(data_dir,scenario,"/",cm,"_",head(yrs,1),"-",tail(yrs,1),".gif"),autobrowse=F, ani.res=125, ani.width=960, ani.height=960)
+   }, movie.name=paste0(data_dir,scenario,"/",scenario,"-",cm,"_",head(yrs,1),"-",tail(yrs,1),".gif"),autobrowse=F, ani.res=125, ani.width=960, ani.height=960)
 }
 
