@@ -3,14 +3,14 @@ library(tidyverse)
 library(circlize)
 library(animation)
 
-#data_dir <- "/home/james/wdResearch/FLUTEoutput/Data/"
-data_dir <- "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/output/Brazil/Unknown/"
+data_dir <- "/home/james/wdResearch/FLUTEoutput/Data/"
+#data_dir <- "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/output/Brazil/Unknown/"
 
 #scenario <- "flute_baseline_2020-08-06a"
-scenario_list <- c("flute_baseline_2020-08-06b",
-                   "flute_demAPdecrA_2020-08-06b",
-                   "flute_yldCPshkA_2020-08-06b",
-                   "flute_demAPdecrA_yldCPshkA_2020-08-06b"
+scenario_list <- c("flute_baseline_2020-08-06b"
+                   #"flute_demAPdecrA_2020-08-06b",
+                   #"flute_yldCPshkA_2020-08-06b",
+                   #"flute_demAPdecrA_yldCPshkA_2020-08-06b"
 )
 
 #scenario_lab <- "Baseline"
@@ -73,7 +73,7 @@ for(i in seq_along(scenario_list)){
    names(rcols) <- regions
    
    
-   yrs <- seq(2015,2030,1)
+   yrs <- seq(2001,2030,1)
    
    #crops
    cms <- c("Maize","OilCrop")
@@ -118,39 +118,43 @@ for(i in seq_along(scenario_list)){
    
    
    #animal products
-   cm <- "Meat"
+   cms <- c("Meat","Swine")
 
-   saveGIF({
-      
-      #loop years
-      for(j in seq_along(yrs)){
+   #loop commodities
+   for(cm in cms){
+      saveGIF({
          
-         apft <- apft_long %>%
-            filter(Year == yrs[j]) %>%
-            filter(Commodity == cm) %>%
-            rename(Value=Gg) %>%
-            dplyr::select(From, To, Value)  #get columns in the right order!
-         
-         
-         chordDiagram(apft,
-                      annotationTrack = "grid",
-                      grid.col = rcols,
-                      transparency = 0.25,
-                      preAllocateTracks = list(track.height = 0.2), 
-                      directional = 1, 
-                      direction.type = c("diffHeight", "arrows"), 
-                      link.arr.type = "big.arrow")
-         
-         title(main= paste0(yrs[j], ", ",cm))
-         circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
-            xlim = get.cell.meta.data("xlim")
-            ylim = get.cell.meta.data("ylim")
-            sector.name = get.cell.meta.data("sector.index")
-            circos.text(mean(xlim), ylim[1], sector.name, facing = "clockwise",
-                        niceFacing = TRUE, adj = c(-0.25, 0.5))
-            circos.axis(h = "top", labels.cex = 0.5, major.tick.percentage = 0.2, sector.index = sector.name, track.index = 2)
-         }, bg.border = NA) # here set bg.border to NA is important
-      }
-   }, movie.name=paste0(data_dir,scenario,"/",scenario,"-",cm,"_",head(yrs,1),"-",tail(yrs,1),".gif"),autobrowse=F, ani.res=125, ani.width=960, ani.height=960)
+         #loop years
+         for(j in seq_along(yrs)){
+            
+            apft <- apft_long %>%
+               filter(Year == yrs[j]) %>%
+               filter(Commodity == cm) %>%
+               rename(Value=Gg) %>%
+               dplyr::select(From, To, Value)  #get columns in the right order!
+            
+            
+            chordDiagram(apft,
+                         annotationTrack = "grid",
+                         grid.col = rcols,
+                         transparency = 0.25,
+                         preAllocateTracks = list(track.height = 0.2), 
+                         directional = 1, 
+                         direction.type = c("diffHeight", "arrows"), 
+                         link.arr.type = "big.arrow")
+            
+            title(main= paste0(yrs[j], ", ",cm))
+            circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
+               xlim = get.cell.meta.data("xlim")
+               ylim = get.cell.meta.data("ylim")
+               sector.name = get.cell.meta.data("sector.index")
+               circos.text(mean(xlim), ylim[1], sector.name, facing = "clockwise",
+                           niceFacing = TRUE, adj = c(-0.25, 0.5))
+               circos.axis(h = "top", labels.cex = 0.5, major.tick.percentage = 0.2, sector.index = sector.name, track.index = 2)
+            }, bg.border = NA) # here set bg.border to NA is important
+         }
+      }, movie.name=paste0(data_dir,scenario,"/",scenario,"-",cm,"_",head(yrs,1),"-",tail(yrs,1),".gif"),autobrowse=F, ani.res=125, ani.width=960, ani.height=960)
+
+   }
 }
 
